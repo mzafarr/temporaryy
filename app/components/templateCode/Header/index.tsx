@@ -50,7 +50,6 @@ const Header = () => {
 
   const toggleDropdown = () => {
     setOpen(!open);
-    console.log("click hogya...")
   };
 
   return (
