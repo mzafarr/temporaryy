@@ -66,6 +66,8 @@ const resumeSchema = new Schema({
   custom: { type: resumeCustomSchema },
 });
 
-const ResumeModel = mongoose.model("Resume", resumeSchema);
+const ResumeModel =
+  (mongoose.models.Resume as mongoose.Model<Resume>) ||
+  mongoose.model<Resume>("Resume", resumeSchema);
 
 export default ResumeModel;

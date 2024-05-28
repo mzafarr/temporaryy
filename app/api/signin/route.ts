@@ -16,6 +16,7 @@ export async function POST(req: NextRequest) {
         { error: "Invalid email or password" },
         { status: 401 }
       );
+      
     }
 
     const jwtSecret = process.env.JWT_SECRET;
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       data: { token },
-      user: { id: user.id, email: user.email },
+      user: { id: user.id, email: user.email, name:user.name },
     });
   } catch (error) {
     console.error("Error during authentication:", error.message);

@@ -106,3 +106,57 @@
   --resume-control-bar-height: 3rem;
   --resume-padding: 1.5rem;
 }
+
+
+tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+tr:nth-child(even) {
+  background-color: #ecedf3;
+}
+
+.table-container {
+  box-shadow: 0 4px 8px #0000001a; /* Adds a shadow */
+  border-radius: 8px;
+  overflow: hidden; 
+}
+
+.table-container thead tr {
+  background-color: #2b2b2cef;
+  color: #ffffff;
+  text-align: left;
+  font-weight: bold;
+  height: 60px;
+  font-size: larger;
+}
+
+/* For webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent; /* Hide the track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888; /* Darker color */
+  border-radius: 6px;
+}
+
+/* For Firefox */
+/* Track */
+::-moz-scrollbar {
+  width: 12px;
+}
+
+::-moz-scrollbar-track {
+  background: transparent; /* Hide the track */
+}
+
+/* Handle */
+::-moz-scrollbar-thumb {
+  background: #888; /* Darker color */
+  border-radius: 6px;
+}

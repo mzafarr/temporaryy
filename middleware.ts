@@ -7,13 +7,13 @@ export async function middleware(req) {
 
   // Redirect if no token and trying to access protected routes
   if (!token) {
-      if (pathname === "/") {
+      if (pathname === "/" || pathname === "/dashboard") {
           return NextResponse.redirect(new URL("/signin", req.url));
       }
   }
 
   // Redirect if token exists and trying to access auth pages
-  if(token  )
+  if(token)
     {
   if ( pathname === "/signin" ||  pathname ===  "/signup") {
       return NextResponse.redirect(new URL("/", req.url));
