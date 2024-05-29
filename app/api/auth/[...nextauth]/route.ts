@@ -6,6 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import jwt from "jsonwebtoken";
 import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
+
 // Extend the JWT interface for consistent token handling
 interface ExtendedJWT extends JWT {
   phone_number?: string;
@@ -21,8 +22,7 @@ interface ExtendedUser {
 }
 
 interface AuthResponseDetails {
-  // Define the structure of authResponse.details here
-  [key: string]: any;
+  [key: string]: any;  // Define the structure of authResponse.details here
 }
 
 interface AuthResponse {
@@ -36,18 +36,19 @@ async function authenticateUser(params: { Email: string; Provider: string }): Pr
 
 // Define authentication options using NextAuthOptions interface
 export const OPTIONS: NextAuthOptions = {
-  // Configure authentication providers
   providers: [
     CredentialsProvider({
-      name: "credentials",
+      name: "Credentials",
       credentials: {},
       async authorize(credentials) {
         const { email, password } = credentials as { email: string; password: string };
         console.log("Entered authorize function with credentials:", credentials);
-        if (email === "" || password === "") {
+
+        if (!email || !password) {
           console.log("Missing username or password");
           return null;
         }
+
         try {
           const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
           const url = `${baseUrl}/api/signin`;
@@ -62,22 +63,25 @@ export const OPTIONS: NextAuthOptions = {
           console.log("Data from backend:", data);
 
           if (response.ok && data.data && data.data.token) {
-            const decodedToken = jwt.decode(data.data.token);
+            const decodedToken = jwt.decode(data.data.token) as { [key: string]: any };
             console.log("decodedToken in authConfig:", decodedToken);
 
-            if (!decodedToken || typeof decodedToken !== "object") {
+            if (!decodedToken) {
               return null;
             }
+
             const user: ExtendedUser = {
-              id: data.user.id,
-              email: data.user.email,
-              token: data.data.token,
+              id: decodedToken.userId,  // Assuming `userId` is the key in decoded token
+              email: email,
+              name: data.user.name,  // Ensure you include 'name' here
+              role: decodedToken.role,  // Assuming role is included in JWT
+              phone_number: decodedToken.phone_number  // Assuming phone_number is included in JWT
             };
 
             console.log("Returning user:", user);
             return user;
           } else {
-            console.log("Authentication failed:", data);
+            console.log("Authentication failed:", data.message || "No details provided");
             return null;
           }
         } catch (error) {
@@ -87,14 +91,18 @@ export const OPTIONS: NextAuthOptions = {
       },
     }),
     GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET
-          })
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    })
   ],
-
+  session: {
+    strategy: 'jwt',
+    maxAge: 7 * 24 * 60 * 60,  // 7 days in seconds
+    updateAge: 24 * 60 * 60,   // 24 hours in seconds
+  },
   callbacks: {
     async signIn({ user, account }: { user: AuthUser; account: Account }) {
-      if (account?.provider === "google") {
+      if (account.provider === "google") {
         await connect();
         try {
           const existingUser = await User.findOne({ email: user.email });
@@ -107,59 +115,42 @@ export const OPTIONS: NextAuthOptions = {
             return true;
           }
         } catch (err) {
-          console.log("Error occurred while Saving Data", err);
+          console.log("Error occurred while saving data:", err);
           return false;
         }
       }
       return true;
     },
-
     async jwt({ token, user, account }): Promise<ExtendedJWT> {
-      console.log('token: ', token);
-      console.log('user: ', user);
-      console.log("Starting jwt callback");
-
+      console.log('Starting jwt callback with token:', token);
       if (user) {
         console.log("Modifying token with user details");
         token.id = user.id;
         token.email = user.email;
-      } else {
-        if (account && user) {
-          const authResponse = await authenticateUser({
-            Email: user.email,
-            Provider: account.provider,
-          });
-          if (authResponse && authResponse.details) {
-            token.user = { ...token?.user, ...authResponse?.details };
-          }
-        }
+        token.role = user.role;  // Ensure role is included if it's part of your user model
+        token.name = user.name;  // Ensure role is included if it's part of your user model
       }
-
-      console.log("Token object after modification:", token);
       return token;
     },
-
     async session({ session, token }) {
-      console.log('token: ', token);
-      console.log('session: ', session);
+      console.log('Starting session callback with token:', token);
       if (token) {
         session.user = {
           ...session.user,
-          id: typeof token.id === "string" ? token.id : undefined,
-          email: typeof token.email === "string" ? token.email : undefined,
-        } as ExtendedUser;
+          id: token.id,
+          email: token.email,
+          role: token.role,  // Include additional fields as needed
+          name: token.name,  // Include additional fields as needed
+        };
       }
       return session;
     },
   },
-  
   pages: {
     signIn: "/signin",
   },
-  
   secret: process.env.NEXTAUTH_SECRET,
 };
 
 const handler = NextAuth(OPTIONS);
-
 export { handler as GET, handler as POST };

@@ -15,8 +15,10 @@ async function dbConnect(): Promise<void> {
 
   try {
     // Attempt to connect to the database
-    // const db = await mongoose.connect("mongodb://localhost:27017/User");
-    const db = await mongoose.connect(process.env.MONGODB_URI);
+    
+    // const db = await mongoose.connect("mongodb://127.0.0.1:27017/User");
+
+    const db = await mongoose.connect("mongodb+srv://zafar:thestaffpad@cluster0.ewx3xtc.mongodb.net/staffpad?retryWrites=true&w=majority");
 
     connection.isConnected = db.connections[0].readyState;
 
