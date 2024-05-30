@@ -19,7 +19,7 @@ interface LoginError {
   data?: {
     details?: string;
   };
-  message?: string;
+  error?: string;
 }
 
 export const loginUser = createAsyncThunk(
@@ -45,8 +45,8 @@ export const loginUser = createAsyncThunk(
     } catch (err) {
       const error = err as AxiosError<LoginError>;
       const errorMessage =  "Something went wrong";
-      onError(errorMessage);
-      return thunkAPI.rejectWithValue(error.response?.data || errorMessage);
+      onError(error.response?.data?.error);
+      return thunkAPI.rejectWithValue(error.response?.data?.error || errorMessage);
     }
   }
 );

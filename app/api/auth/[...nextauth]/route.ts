@@ -40,7 +40,7 @@ export const OPTIONS: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {},
-      async authorize(credentials) {
+      async authorize(credentials):Promise<any> {
         const { email, password } = credentials as { email: string; password: string };
         console.log("Entered authorize function with credentials:", credentials);
 
@@ -127,7 +127,6 @@ export const OPTIONS: NextAuthOptions = {
         console.log("Modifying token with user details");
         token.id = user.id;
         token.email = user.email;
-        token.role = user.role;  // Ensure role is included if it's part of your user model
         token.name = user.name;  // Ensure role is included if it's part of your user model
       }
       return token;
@@ -137,7 +136,7 @@ export const OPTIONS: NextAuthOptions = {
       if (token) {
         session.user = {
           ...session.user,
-          id: token.id,
+           id: token.id,
           email: token.email,
           role: token.role,  // Include additional fields as needed
           name: token.name,  // Include additional fields as needed

@@ -6,23 +6,31 @@ import { SlMagnifier } from 'react-icons/sl';
 import { Loader2 } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../lib/redux/store';
-import { fetchResumes } from '../lib/redux/resume/getResumeList/GetResumeListThunk';
+import { fetchResumes } from '../lib/redux/resume/getResumeList/GetResumeListThunk';;
 import { deleteResume } from '../lib/redux/resume/deleteResume/deleteResumeThunk';
+import { resumePoints } from '../lib/redux/resumePoints/resumePointsThunk';
 
 
-const Page = () => {
-  
+const Page = () => {  
+
   const dispatch = useDispatch<AppDispatch>();
   const { data: session, status } = useSession();
   const { resumes, loading, error } = useSelector((state: RootState) => state.getResume);
+  const { resumepoints, loadingPoints,errorPoints } = useSelector((state: RootState) => state.resumePoints);
   const [searchQuery, setSearchQuery] = useState('');
+
+  console.log("ResumePoints are here",resumepoints.points)
+  console.log("Email",session?.user?.email)
+  console.log("ID",session?.user?.id)
+
 
   // Get All Resumes
   useEffect(() => {
-    if (session?.user?.email) {
-      dispatch(fetchResumes(session.user.email));
-    }
-  }, [session, dispatch]);
+      // Fetching resume Points on component mount
+      dispatch(fetchResumes(session?.user?.email));
+      dispatch(resumePoints(session?.user?.id));
+    
+  }, [session?.user?.email || session?.user?.id ]);
 
   // Delete API
   const handleDelete = async (resumeId: string) => {
@@ -45,6 +53,13 @@ const Page = () => {
           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
         ) : (
           <p className='font-semibold text-3xl text-end'>{session?.user?.name}'s Resume</p>
+        )}
+        {status === 'loading' ? (
+          <div className=" w-[100%] flex justify-center">
+          {/* <Loader2 className="mr-2 h-5 w-5 animate-spin" /> */}
+          </div>
+        ) : (
+          <p className='font-semibold text-3xl text-center w-[100%]'>{resumepoints.points}<span className='font-normal text-xl'> Points Remaining</span></p>
         )}
         <div className='flex items-center justify-between px-3 border rounded-full w-full h-[50px]'>
           <input

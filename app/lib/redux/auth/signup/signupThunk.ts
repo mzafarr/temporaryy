@@ -17,7 +17,7 @@ interface RegisterError {
   data?: {
     details?: string;
   };
-  message?: string;
+  error?: string;
 }
 
 export const registerUser = createAsyncThunk(
@@ -42,9 +42,9 @@ export const registerUser = createAsyncThunk(
       }
     } catch (err) {
       const error = err as AxiosError<RegisterError>;
-      const errorMessage =  "Something went wrong";
+      const errorMessage =  error.response?.data?.error;
       onError(errorMessage);
-      return thunkAPI.rejectWithValue(error.response?.data || errorMessage);
+      return thunkAPI.rejectWithValue(error.response?.data?.error );
     }
   }
 );
