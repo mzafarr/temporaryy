@@ -30,7 +30,7 @@ const SignUpPage = () => {
     setPassword(pass);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     startTransition(async () => {
       let payload = {
@@ -38,20 +38,23 @@ const SignUpPage = () => {
         email: email.toLowerCase(),
         password: password,
       };
-      dispatch(
+      await dispatch(
         registerUser({
           payload,
           onSuccess: () => {
-            router.push("/signin");
+           
             toast.success("User Added Successfully!");
+            router.push("/signin");
           },
           onError: (err) => {
+            
             toast.error(err);
           },
         })
       );
     });
   };
+  
   function isEmail(email: string) {
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
     return emailRegex.test(email);
