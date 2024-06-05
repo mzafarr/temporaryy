@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Button } from '../components/Button';
+import { Button } from "@/app/components/Button";
 import { IoIosArrowBack } from 'react-icons/io';
 import { MdNavigateNext } from 'react-icons/md';
 import { Input } from '@/components/ui/input';
