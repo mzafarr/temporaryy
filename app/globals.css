@@ -160,3 +160,33 @@ tr:nth-child(even) {
   background: #888; /* Darker color */
   border-radius: 6px;
 }
+
+/* 
+.job-item {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f8f8;
+  padding: 8px;
+  border-radius: 8px;
+}
+
+.job-item:hover .edit-button {
+  display: inline-block;
+}
+
+.job-item:hover .job-text {
+  opacity: 0.6;
+}
+
+.edit-button {
+  display: none;
+  position: absolute;
+  right: 50%;
+  transform: translateX(50%);
+  background-color: #4472f1;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 50px;
+} */
